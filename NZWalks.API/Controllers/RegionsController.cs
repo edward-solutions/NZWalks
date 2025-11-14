@@ -15,6 +15,7 @@ namespace NZWalks.API.Controllers
         {
             _dbContext = dbContext;
         }
+
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -22,5 +23,19 @@ namespace NZWalks.API.Controllers
             return Ok(regions);
         }
 
+        //GET Single Region
+        //GET https://localhost:portnumber/api/regions/{id}
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public IActionResult GetById([FromRoute]Guid id)
+        {
+            var region = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            if(region == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(region);
+        }
     }
 }
