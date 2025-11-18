@@ -17,6 +17,26 @@ namespace NZWalks.API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            var difficulties = new List<Difficulty>()
+            {
+                new Difficulty
+                {
+                    Id = Guid.Parse("b7317d96-cf1b-4246-b911-ef42e616d7c7"),
+                    Name = "Easy"
+                },
+                new Difficulty
+                {
+                    Id = Guid.Parse("191e67e3-118d-4a62-bd5d-a4fea9a50f34"),
+                    Name = "Medium"
+                },
+                new Difficulty
+                {
+                    Id = Guid.Parse("24498ca7-e693-473a-b4d4-7abf51eee4f1"),
+                    Name = "Hard"
+                },
+            };
+
+            modelBuilder.Entity<Difficulty>().HasData(difficulties);
 
             modelBuilder.Entity<Region>().HasData(
                 new Region
