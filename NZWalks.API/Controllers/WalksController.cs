@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
@@ -39,6 +40,22 @@ namespace NZWalks.API.Controllers
             var walksDomainModel = await _walkRepository.GetAllAsync();
 
             var walkDto = _mapper.Map<List<WalkDto>>(walksDomainModel);
+
+            return Ok(walkDto);
+        }
+
+        //GET Walk by Id
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetWalkById([FromRoute] Guid id)
+        {
+            var walkDomainModel = await _walkRepository.GetByIdAsync(id);
+            if(walkDomainModel == null)
+            {
+                return NotFound();
+            }
+
+            var walkDto = _mapper.Map<WalkDto>(walkDomainModel);
 
             return Ok(walkDto);
         }
