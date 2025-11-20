@@ -24,14 +24,22 @@ namespace NZWalks.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
-            var walksDomainModel = _mapper.Map<Walk>(addWalkRequestDto);
+            if (ModelState.IsValid)
+            {
+                var walksDomainModel = _mapper.Map<Walk>(addWalkRequestDto);
 
-            await _walkRepository.CreateAsync(walksDomainModel);
+                await _walkRepository.CreateAsync(walksDomainModel);
 
-            //Map domain model to DTO
-            var walkDto = _mapper.Map<WalkDto>(walksDomainModel);
+                //Map domain model to DTO
+                var walkDto = _mapper.Map<WalkDto>(walksDomainModel);
 
-            return Ok(walkDto);
+                return Ok(walkDto);
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+            
         }
 
         [HttpGet]
@@ -65,16 +73,20 @@ namespace NZWalks.API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> UpdateWalkById([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
-            var walkDomainModel = _mapper.Map<Walk>(updateWalkRequestDto);
-            walkDomainModel = await _walkRepository.UpdateAsync(id, walkDomainModel);
-            if(walkDomainModel == null)
+            if(ModelState.IsValid)
             {
-                return NotFound();
+                var walkDomainModel = _mapper.Map<Walk>(updateWalkRequestDto);
+                walkDomainModel = await _walkRepository.UpdateAsync(id, walkDomainModel);
+                if (walkDomainModel == null)
+                {
+                    return NotFound();
+                }
+
+                var walkDto = _mapper.Map<WalkDto>(walkDomainModel);
+
+                return Ok(walkDto);
             }
-
-            var walkDto = _mapper.Map<WalkDto>(walkDomainModel);
-
-            return Ok(walkDto);
+            return BadRequest();
         }
 
         //DELETE Walk by Id
