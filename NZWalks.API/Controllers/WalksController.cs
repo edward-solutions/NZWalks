@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NZWalks.API.CustomActionFilters;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
@@ -22,24 +23,17 @@ namespace NZWalks.API.Controllers
         //CREATE Walk
         //POST: http:/api/walks
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
-            if (ModelState.IsValid)
-            {
-                var walksDomainModel = _mapper.Map<Walk>(addWalkRequestDto);
+            var walksDomainModel = _mapper.Map<Walk>(addWalkRequestDto);
 
-                await _walkRepository.CreateAsync(walksDomainModel);
+            await _walkRepository.CreateAsync(walksDomainModel);
 
-                //Map domain model to DTO
-                var walkDto = _mapper.Map<WalkDto>(walksDomainModel);
+            //Map domain model to DTO
+            var walkDto = _mapper.Map<WalkDto>(walksDomainModel);
 
-                return Ok(walkDto);
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
-            
+            return Ok(walkDto);
         }
 
         [HttpGet]
@@ -58,7 +52,7 @@ namespace NZWalks.API.Controllers
         public async Task<IActionResult> GetWalkById([FromRoute] Guid id)
         {
             var walkDomainModel = await _walkRepository.GetByIdAsync(id);
-            if(walkDomainModel == null)
+            if (walkDomainModel == null)
             {
                 return NotFound();
             }
@@ -71,22 +65,19 @@ namespace NZWalks.API.Controllers
         //UPDATE Walk by id
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> UpdateWalkById([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
-            if(ModelState.IsValid)
+            var walkDomainModel = _mapper.Map<Walk>(updateWalkRequestDto);
+            walkDomainModel = await _walkRepository.UpdateAsync(id, walkDomainModel);
+            if (walkDomainModel == null)
             {
-                var walkDomainModel = _mapper.Map<Walk>(updateWalkRequestDto);
-                walkDomainModel = await _walkRepository.UpdateAsync(id, walkDomainModel);
-                if (walkDomainModel == null)
-                {
-                    return NotFound();
-                }
-
-                var walkDto = _mapper.Map<WalkDto>(walkDomainModel);
-
-                return Ok(walkDto);
+                return NotFound();
             }
-            return BadRequest();
+
+            var walkDto = _mapper.Map<WalkDto>(walkDomainModel);
+
+            return Ok(walkDto);
         }
 
         //DELETE Walk by Id
