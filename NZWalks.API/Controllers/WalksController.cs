@@ -37,11 +37,11 @@ namespace NZWalks.API.Controllers
         }
 
         //GET Walks
-        //GET: /api/walks?filterOn=Name&filterQuery=Track
+        //GET: /api/walks?filterOn=Name&filterQuery=Track&sortBy=Name&isAscending=true
         [HttpGet]
-        public async Task<IActionResult> GetWalks([FromQuery] string? filterOn, [FromQuery] string filterQuery)
+        public async Task<IActionResult> GetWalks([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, bool isAscending)
         {
-            var walksDomainModel = await _walkRepository.GetAllAsync(filterOn, filterQuery);
+            var walksDomainModel = await _walkRepository.GetAllAsync(filterOn, filterQuery, sortBy, isAscending);
 
             var walkDto = _mapper.Map<List<WalkDto>>(walksDomainModel);
 

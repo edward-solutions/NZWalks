@@ -31,7 +31,7 @@ namespace NZWalks.API.Repositories
             return existingWalk;
         }
 
-        public async Task<List<Walk>> GetAllAsync(string? filterOn, string? filterQuery)
+        public async Task<List<Walk>> GetAllAsync(string? filterOn, string? filterQuery, string? sortBy = null, bool isAscending = true)
         {
             var query = _dbContext.Walks
                 .Include("Difficulty")
@@ -47,9 +47,23 @@ namespace NZWalks.API.Repositories
                 }
             }
 
+            //Sorting
+            if(!string.IsNullOrWhiteSpace(sortBy))
+            {
+                if(sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = isAscending ? query.OrderBy(x => x.Name) : query.OrderByDescending(x => x.Name);
+                }
+                else if (sortBy.Equals("LengthInKm", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = isAscending ? query.OrderBy(x => x.LengthInKm) : query.OrderByDescending(x => x.LengthInKm);
+                }
+            }
+
             return await query.ToListAsync();
         }
 
+        //localhost:7236/api/Walks/09601132-f92d-457c-b47e-da90e117b33c
         public async Task<Walk?> GetByIdAsync(Guid id)
         {
             return await _dbContext.Walks
