@@ -13,6 +13,7 @@
             <th>Code</th>
             <th>Name</th>
             <th>Image URL</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -23,6 +24,9 @@
                 <td>@walk.Code</td>
                 <td>@walk.Name</td>
                 <td>@walk.RegionImageUrl</td>
+                <td>
+                    <a asp-controller="Regions" asp-action="Edit" asp-route-id="@walk.Id" class="btn btn-light">Edit</a>
+                </td>
             </tr>
         }
     </tbody>
