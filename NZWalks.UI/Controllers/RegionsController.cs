@@ -66,7 +66,7 @@ namespace NZWalks.UI.Controllers
 
             var response = await httpResponseMessage.Content.ReadFromJsonAsync<RegionDto>();
 
-            if(response != null)
+            if (response != null)
             {
                 return RedirectToAction("Index");
             }
@@ -81,7 +81,7 @@ namespace NZWalks.UI.Controllers
 
             var httpResponseMessage = await client.GetFromJsonAsync<RegionDto>($"https://localhost:7236/api/regions/{id.ToString()}");
 
-            if(httpResponseMessage != null)
+            if (httpResponseMessage != null)
             {
                 return View(httpResponseMessage);
             }
@@ -106,12 +106,34 @@ namespace NZWalks.UI.Controllers
 
             var response = await httpResponseMessage.Content.ReadFromJsonAsync<RegionDto>();
 
-            if(response != null)
+            if (response != null)
             {
                 return RedirectToAction("Index", "Regions");
             }
 
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(RegionDto request)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient();
+
+                var httpResponseMessage = await client.DeleteAsync($"https://localhost:7236/api/regions/{request.Id}");
+                httpResponseMessage.EnsureSuccessStatusCode();
+
+                return RedirectToAction("Index", "Regions");
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            return View("Edit");
+
         }
     }
 }
